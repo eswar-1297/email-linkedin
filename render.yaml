@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: email-linkedin-lookup
+    runtime: node
+    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GOOGLE_CX
+        sync: false
+      - key: APOLLO_API_KEY
+        sync: false
