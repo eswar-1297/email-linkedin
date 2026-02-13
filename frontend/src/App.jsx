@@ -52,7 +52,8 @@ function ProfileCard({ profile }) {
 function App() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [showName, setShowName] = useState(false);
+  const [country, setCountry] = useState("");
+  const [showExtras, setShowExtras] = useState(false);
   const [matchedProfiles, setMatchedProfiles] = useState([]);
   const [companyName, setCompanyName] = useState(null);
   const [companyEmployees, setCompanyEmployees] = useState([]);
@@ -87,6 +88,7 @@ function App() {
     try {
       const body = { email: email.trim() };
       if (name.trim()) body.name = name.trim();
+      if (country.trim()) body.country = country.trim();
 
       const response = await fetch(API_URL, {
         method: "POST",
@@ -163,29 +165,45 @@ function App() {
             />
           </div>
 
-          {!showName ? (
+          {!showExtras ? (
             <button
               type="button"
               className="add-name-link"
-              onClick={() => setShowName(true)}
+              onClick={() => setShowExtras(true)}
             >
-              + Add name for better accuracy
+              + Add name, country for better accuracy
             </button>
           ) : (
-            <div className="input-group">
-              <svg className="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Full name (e.g. John Smith)"
-                className="email-input"
-                disabled={loading}
-                autoFocus
-              />
+            <div className="extra-fields">
+              <div className="input-group">
+                <svg className="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Full name (e.g. John Smith)"
+                  className="email-input"
+                  disabled={loading}
+                  autoFocus
+                />
+              </div>
+              <div className="input-group">
+                <svg className="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="10" r="3" />
+                  <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z" />
+                </svg>
+                <input
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="Country (e.g. United States, India)"
+                  className="email-input"
+                  disabled={loading}
+                />
+              </div>
             </div>
           )}
 

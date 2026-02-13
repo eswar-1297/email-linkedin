@@ -395,6 +395,14 @@ body {
   font-weight: 600;
 }
 
+/* Extra fields (name + country) */
+.extra-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.3s ease;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

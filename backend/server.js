@@ -390,17 +390,22 @@ async function findMatchedProfiles(email, discoveredName, discoveredCompany, dis
   // Try 1: Exact email
   googleResults = await searchLinkedIn(`"${email}"`);
 
-  // Try 2: Name + Company
+  // Try 2: Name + Company + Location (most specific)
+  if ((!googleResults || googleResults.length === 0) && discoveredCompany && discoveredLocation) {
+    googleResults = await searchLinkedIn(`"${discoveredName}" "${discoveredCompany}" ${discoveredLocation}`);
+  }
+
+  // Try 3: Name + Company
   if ((!googleResults || googleResults.length === 0) && discoveredCompany) {
     googleResults = await searchLinkedIn(`"${discoveredName}" "${discoveredCompany}"`);
   }
 
-  // Try 3: Name + Location
+  // Try 4: Name + Location/Country
   if ((!googleResults || googleResults.length === 0) && discoveredLocation) {
     googleResults = await searchLinkedIn(`"${discoveredName}" ${discoveredLocation}`);
   }
 
-  // Try 4: Just the name (quoted)
+  // Try 5: Just the name (quoted)
   if (!googleResults || googleResults.length === 0) {
     googleResults = await searchLinkedIn(`"${discoveredName}"`);
   }
@@ -490,7 +495,7 @@ function isITRelated(profile) {
 // ─── Main lookup endpoint ───
 app.post("/api/lookup", async (req, res) => {
   try {
-    const { email, name: userProvidedName } = req.body;
+    const { email, name: userProvidedName, country: userProvidedCountry } = req.body;
 
     if (!email || !isValidEmail(email)) {
       return res.status(400).json({
@@ -500,9 +505,10 @@ app.post("/api/lookup", async (req, res) => {
     }
 
     const trimmedName = userProvidedName?.trim() || null;
+    const trimmedCountry = userProvidedCountry?.trim() || null;
 
     console.log(`\n${"=".repeat(60)}`);
-    console.log(`[Lookup] Starting lookup for: ${email}${trimmedName ? ` (name: ${trimmedName})` : ""}`);
+    console.log(`[Lookup] Starting lookup for: ${email}${trimmedName ? ` (name: ${trimmedName})` : ""}${trimmedCountry ? ` (country: ${trimmedCountry})` : ""}`);
     console.log(`${"=".repeat(60)}`);
 
     // ── Step 1: Try Apollo first (pass name if provided for better match) ──
@@ -533,7 +539,7 @@ app.post("/api/lookup", async (req, res) => {
       extractNameFromEmail(email);
 
     const discoveredCompany = apolloCompany || githubData?.company || null;
-    const discoveredLocation = githubData?.location || gravatarData?.location || null;
+    const discoveredLocation = trimmedCountry || githubData?.location || gravatarData?.location || null;
     const directLinkedIn =
       apolloLinkedIn || githubData?.linkedin_url || gravatarData?.linkedin_url || null;
 
